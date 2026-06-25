@@ -360,7 +360,6 @@ function drawKen(f){
 }
 
 function fireHadouken(f){
-  if(f.sp<f.msp)return false;f.sp=0;
   projs.push({x:f.facing===1?f.x+f.w:f.x,y:f.y-50,w:44,h:32,vx:f.facing*9,
     isP1:f===p1,life:80,frame:0,color:f===p1?'#4499FF':'#FF6600'});
   return true;
@@ -423,8 +422,8 @@ function drawHUD(){
   ctx.fillStyle='#000022';ctx.fillRect(56,39,bw,8);ctx.fillStyle='#2255BB';ctx.fillRect(56,39,(p1.sp/p1.msp)*bw,8);ctx.strokeStyle='#4477EE';ctx.lineWidth=1;ctx.strokeRect(56,39,bw,8);
   ctx.fillStyle='#000022';ctx.fillRect(W-56-bw,39,bw,8);
   const p2sw=(p2.sp/p2.msp)*bw;ctx.fillStyle='#BB4400';ctx.fillRect(W-56-p2sw,39,p2sw,8);ctx.strokeStyle='#FF7700';ctx.strokeRect(W-56-bw,39,bw,8);
-  if(p1.sp>=p1.msp){ctx.fillStyle='#88AAFF';ctx.font='bold 7px monospace';ctx.textAlign='left';ctx.fillText('SUPER',58,47);}
-  if(p2.sp>=p2.msp){ctx.fillStyle='#FFAA44';ctx.textAlign='right';ctx.fillText('SUPER',W-58,47);}
+  ctx.fillStyle='#88AAFF';ctx.font='bold 7px monospace';ctx.textAlign='left';ctx.fillText('HADOUKEN OK',58,47);
+  ctx.fillStyle='#FFAA44';ctx.textAlign='right';ctx.fillText('HADOUKEN OK',W-58,47);
   ctx.fillStyle='#000';ctx.fillRect(W/2-26,2,52,50);ctx.strokeStyle='#CC8800';ctx.lineWidth=2;ctx.strokeRect(W/2-26,2,52,50);
   ctx.fillStyle='#CC0000';ctx.font='bold 28px monospace';ctx.textAlign='center';ctx.fillText(String(tim).padStart(2,'0'),W/2,40);
   for(let i=0;i<p1.wins;i++){ctx.fillStyle='#FFD700';ctx.beginPath();ctx.arc(295+i*16,11,6,0,Math.PI*2);ctx.fill();}
@@ -457,7 +456,7 @@ function tryHit(att,def){
   def.hp=Math.max(0,def.hp-dmg);def.hitT=22;def.vx=att.facing*2.5;if(def.hp<=0)endR();
 }
 function startAtk(f,type){
-  if(f.atkPhase!==0)return false;if(type==='special'&&f.sp<f.msp)return false;
+  if(f.atkPhase!==0)return false;
   const d=ATK[type];
   if(type==='special'){f.atkSt=8;f.atkAc=14;f.atkRc=20;f.atkTimer=8;f.state='special';}
   else{if(!d)return false;f.atkSt=d.st;f.atkAc=d.ac;f.atkRc=d.rc;f.atkTimer=d.st;f.state=type;}
@@ -516,7 +515,7 @@ function aiTick(){
     else if(d>105)f.vx=f.facing*4.5;else if(d<50)f.vx=-f.facing*3;else f.vx*=0.5;
     if(f.onG&&r<0.007&&d<170){f.vy=-16;f.onG=false;}
     if(d<105&&f.onG){
-      if(f.sp>=f.msp&&r<0.018){startAtk(f,'special');f.aiCD=24;}
+      if(r<0.018){startAtk(f,'special');f.aiCD=24;}
       else if(r<0.065){startAtk(f,r<0.04?'punch':'kick');f.aiCD=9;}
       else if(d<72&&r<0.04){startAtk(f,'cPunch');f.aiCD=9;}
     }
